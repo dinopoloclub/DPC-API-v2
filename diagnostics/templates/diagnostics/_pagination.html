@@ -1,0 +1,12 @@
+{% load humanize %}
+<nav class="mt-4 flex items-center justify-between text-sm text-stone-500">
+  <p>
+    {% if page.paginator.count %}
+      {{ page.start_index|intcomma }}–{{ page.end_index|intcomma }} of {{ page.paginator.count|intcomma }} {{ noun }}
+    {% endif %}
+  </p>
+  <div class="flex gap-2">
+    {% if page.has_previous %}<a class="btn" href="{% querystring page=page.previous_page_number %}">← Previous</a>{% endif %}
+    {% if page.has_next %}<a class="btn" href="{% querystring page=page.next_page_number %}">Next →</a>{% endif %}
+  </div>
+</nav>

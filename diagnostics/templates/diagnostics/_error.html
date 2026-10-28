@@ -1,0 +1,23 @@
+{% load diagnostics_tags %}
+<section class="card overflow-hidden">
+  <header class="card-header">
+    <h2 class="card-title">Error</h2>
+    <button type="button" class="btn btn-small" data-copy="#error-{{ report.pk }}">Copy</button>
+  </header>
+
+  {% if report.message %}
+    <pre class="border-b border-stone-200 bg-brand/5 px-4 py-3 font-mono text-sm font-semibold whitespace-pre-wrap break-words text-brand-dark">{{ report.message }}</pre>
+  {% endif %}
+
+  {% if report.stack_trace %}
+    <ol class="code-block max-h-[32rem]">
+      {% for frame in report.stack_trace|stack_frames %}
+        <li class="break-words whitespace-pre-wrap {% if frame.is_library %}text-stone-500{% endif %}">{{ frame.text }}</li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+
+  <pre id="error-{{ report.pk }}" hidden>{{ report.message }}
+
+{{ report.stack_trace }}</pre>
+</section>

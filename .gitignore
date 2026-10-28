@@ -1,0 +1,6 @@
+.venv/
+.env
+uploads/
+staticfiles/
+__pycache__/
+diagnostics/static/diagnostics/app.css

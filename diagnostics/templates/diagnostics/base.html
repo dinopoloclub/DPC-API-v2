@@ -1,0 +1,55 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} - DPC Diagnostics</title>
+  <link rel="icon" href="{% static 'diagnostics/favicon-32.png' %}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{% static 'diagnostics/favicon-192.png' %}">
+  <link rel="stylesheet" href="{% static 'diagnostics/app.css' %}">
+  <script src="{% static 'diagnostics/app.js' %}" defer></script>
+</head>
+<body class="min-h-screen bg-stone-100 font-sans text-ink antialiased">
+  {% block header %}
+    {% with page_name=request.resolver_match.url_name %}
+      <header class="bg-brand text-white shadow-md">
+        <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+          <a href="{% url 'report_list' %}" class="flex items-center gap-3">
+            <img src="{% static 'diagnostics/logo.svg' %}" alt="Dinosaur Polo Club" class="h-9 w-auto">
+            <span class="text-lg font-bold tracking-tight">Diagnostics</span>
+            {% if is_dev %}
+              <span class="rounded bg-brand-yellow px-1.5 py-0.5 text-xs font-bold text-ink uppercase" title="ENVIRONMENT=dev: everyone is signed in automatically">Dev</span>
+            {% endif %}
+          </a>
+
+          <nav class="flex gap-1">
+            <a href="{% url 'report_list' %}" class="nav-link {% if 'report' in page_name %}nav-link-active{% endif %}">Reports</a>
+            <a href="{% url 'issue_list' %}" class="nav-link {% if 'issue' in page_name %}nav-link-active{% endif %}">Issues</a>
+          </nav>
+
+          <div class="ml-auto flex items-center gap-3 text-sm">
+            {% if request.session.avatar_url %}
+              <img src="{{ request.session.avatar_url }}" alt="" class="h-7 w-7 rounded-full ring-2 ring-white/40">
+            {% endif %}
+            <span class="hidden sm:inline">{{ user.first_name|default:user.username }}</span>
+            {% if not is_dev %}
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="cursor-pointer text-white/80 hover:text-white">Sign out</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+    {% endwith %}
+  {% endblock %}
+
+  <main class="mx-auto max-w-7xl px-4 py-6">
+    {% for message in messages %}
+      <p class="mb-4 rounded-lg border border-brand/30 bg-brand/5 px-4 py-3 text-sm text-brand-dark">{{ message }}</p>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

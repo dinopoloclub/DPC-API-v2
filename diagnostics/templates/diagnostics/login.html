@@ -1,0 +1,26 @@
+{% extends "diagnostics/base.html" %}
+{% load static %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+  <div class="flex min-h-[80vh] items-center justify-center">
+    <div class="card w-full max-w-sm overflow-hidden text-center">
+      <div class="bg-brand px-6 py-8">
+        <img src="{% static 'diagnostics/logo.svg' %}" alt="Dinosaur Polo Club" class="mx-auto h-20 w-auto">
+      </div>
+
+      <div class="space-y-5 px-6 py-8">
+        <div>
+          <h1 class="text-xl font-bold">DPC Diagnostics</h1>
+        </div>
+
+        <a href="{% url 'slack_start' %}?next={{ next_url|urlencode }}" class="btn btn-primary w-full py-2.5">
+          Sign in with Slack
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

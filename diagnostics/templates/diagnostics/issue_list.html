@@ -1,0 +1,71 @@
+{% extends "diagnostics/base.html" %}
+{% load diagnostics_tags humanize %}
+
+{% block title %}Issues{% endblock %}
+
+{% block content %}
+  <form method="get" class="card mb-4 p-4">
+    <div class="flex flex-col gap-3 lg:flex-row">
+      <input type="search" name="q" value="{{ request.GET.q }}" class="input flex-1"
+             placeholder="Search error messages, metadata, stacktraces..." data-search>
+
+      <select name="game" class="input" data-autosubmit>
+        <option value="">All games</option>
+        {% for game in games %}
+          <option value="{{ game }}" {% if request.GET.game == game %}selected{% endif %}>{{ game|game_name }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="status" class="input" data-autosubmit>
+        <option value="" {% if not status %}selected{% endif %}>Any status</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="sort" class="input" data-autosubmit>
+        {% for value, label in sorts.items %}
+          <option value="{{ value }}" {% if sort == value %}selected{% endif %}>Sort: {{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <button class="btn btn-primary">Search</button>
+    </div>
+    <p class="mt-2 text-xs text-stone-500">
+      Reports with the stacktrace are grouped into one issue.
+      Resolved issues reopen automatically if the error comes back.
+    </p>
+  </form>
+
+  <div class="card divide-y divide-stone-200 overflow-hidden">
+    {% for issue in page %}
+      <a href="{% url 'issue_detail' issue.pk %}" class="row-link">
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-semibold">{{ issue.title }}</p>
+          <p class="mt-0.5 truncate font-mono text-xs text-stone-500">{{ issue.culprit|default:"—" }}</p>
+          <div class="mt-1.5 flex gap-1.5">
+            <span class="badge badge-game">{{ issue.game|game_name }}</span>
+            <span class="badge status-{{ issue.status }}">{{ issue.get_status_display }}</span>
+          </div>
+        </div>
+
+        <div class="w-20 shrink-0 text-right">
+          <p class="text-lg font-bold">{{ issue.report_count|intcomma }}</p>
+          <p class="text-xs text-stone-500">reports</p>
+          {% if issue.reports_last_day %}
+            <p class="text-xs font-semibold text-brand">+{{ issue.reports_last_day }} today</p>
+          {% endif %}
+        </div>
+
+        <div class="hidden w-36 shrink-0 text-right text-xs text-stone-500 sm:block">
+          <p title="{{ issue.last_seen }}">Last {{ issue.last_seen|naturaltime }}</p>
+          <p title="{{ issue.first_seen }}">First {{ issue.first_seen|naturaltime }}</p>
+        </div>
+      </a>
+    {% empty %}
+      <p class="px-4 py-16 text-center text-stone-500">No issues match. 🎉</p>
+    {% endfor %}
+  </div>
+
+  {% include "diagnostics/_pagination.html" with noun="issues" %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "diagnostics/base.html" %}
+{% load diagnostics_tags humanize %}
+
+{% block title %}Report #{{ report.pk }}{% endblock %}
+
+{% block content %}
+  <nav class="mb-3 text-sm text-stone-500">
+    <a href="{% url 'report_list' %}" class="hover:text-brand">Reports</a> / #{{ report.pk }}
+  </nav>
+
+  <div class="mb-6">
+    <h1 class="text-xl font-bold break-words">{{ report.headline }}</h1>
+    <div class="mt-2 flex flex-wrap items-center gap-1.5 text-sm text-stone-500">
+      <span class="badge badge-game">{{ report.game|game_name }}</span>
+      {% if report.motive %}<span class="badge motive-{{ report.motive|slugify }}">{{ report.motive }}</span>{% endif %}
+      {% if report.branch %}<span class="badge">{{ report.branch }}</span>{% endif %}
+      {% if report.version %}<span>{{ report.version }}</span>{% endif %}
+      <span title="{{ report.received_at }}">· received {{ report.received_at|naturaltime }}</span>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="min-w-0 space-y-6 lg:col-span-2">
+      {% if report.issue %}
+        <a href="{% url 'issue_detail' report.issue.pk %}" class="card flex items-center gap-3 p-4 text-sm hover:border-brand">
+          <span class="badge status-{{ report.issue.status }}">{{ report.issue.get_status_display }}</span>
+          <span>Part of <strong>issue #{{ report.issue.pk }}</strong>. See every report with this error →</span>
+        </a>
+      {% endif %}
+
+      {% if report.message or report.stack_trace %}
+        {% include "diagnostics/_error.html" %}
+      {% endif %}
+
+      <section class="card overflow-hidden">
+        <header class="card-header"><h2 class="card-title">Metadata</h2></header>
+        <dl class="divide-y divide-stone-100 text-sm">
+          {% for key, value in report.other_metadata %}
+            <div class="grid gap-1 px-4 py-2.5 sm:grid-cols-4 sm:gap-4">
+              <dt class="font-semibold break-words text-stone-600">{{ key }}</dt>
+              <dd class="min-w-0 sm:col-span-3">
+                {% if value|is_multiline %}
+                  <pre class="max-h-64 overflow-auto rounded-md bg-stone-50 p-2 font-mono text-xs whitespace-pre-wrap break-words">{{ value }}</pre>
+                {% else %}
+                  <span class="font-mono text-xs break-all">{{ value|default:"—" }}</span>
+                {% endif %}
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </section>
+    </div>
+
+    <aside class="min-w-0 space-y-6">
+      {% with screenshot=report.screenshot %}
+        {% if screenshot %}
+          <section class="card overflow-hidden">
+            <a href="{% url 'attachment_file' screenshot.pk %}" target="_blank" title="Open full size">
+              <img src="{% url 'attachment_file' screenshot.pk %}" alt="Screenshot" class="w-full">
+            </a>
+          </section>
+        {% endif %}
+      {% endwith %}
+
+      <section class="card overflow-hidden">
+        <header class="card-header"><h2 class="card-title">Attachments</h2></header>
+        <ul class="divide-y divide-stone-100 text-sm">
+          {% for attachment in report.attachments.all %}
+            <li class="flex items-center gap-3 px-4 py-2.5">
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-mono text-xs font-semibold">{{ attachment.filename }}</p>
+                <p class="text-xs text-stone-500">{{ attachment.size|filesizeformat }}</p>
+              </div>
+              {% if attachment.is_image or attachment.is_text %}
+                <a href="{% url 'attachment_file' attachment.pk %}" target="_blank" class="btn btn-small">View</a>
+              {% endif %}
+              <a href="{% url 'attachment_file' attachment.pk %}?download=1" class="btn btn-small">Download</a>
+            </li>
+          {% empty %}
+            <li class="px-4 py-3 text-stone-500">No attachments.</li>
+          {% endfor %}
+        </ul>
+      </section>
+    </aside>
+  </div>
+{% endblock %}

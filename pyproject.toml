@@ -1,0 +1,47 @@
+[project]
+name = "dpc-diagnostics"
+version = "2.0.0"
+description = "Collects diagnostic reports from DPC games and provides a browser."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=6.1,<6.2",
+    "gunicorn>=23",
+    "pillow>=11",
+    "psycopg[binary]>=3.2",
+    "requests>=2.32",
+    "whitenoise>=6.9",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25",
+    "pylint>=3.3",
+    "pylint-django>=2.6",
+    "pytailwindcss>=0.4",
+]
+
+[tool.uv]
+package = false
+
+[tool.black]
+line-length = 120
+extend-exclude = "/migrations/"
+
+[tool.pylint.main]
+load-plugins = ["pylint_django"]
+django-settings-module = "config.settings"
+ignore = ["migrations", ".venv"]
+jobs = 0
+
+[tool.pylint.basic]
+# Test names describe themselves, so they don't need docstrings.
+no-docstring-rgx = "^(_|test_)"
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint."messages control"]
+disable = [
+    "too-few-public-methods",  # otherwise it will complain about django
+]

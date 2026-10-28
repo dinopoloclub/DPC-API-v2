@@ -1,0 +1,44 @@
+{% extends "diagnostics/base.html" %}
+{% load diagnostics_tags %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+  <form method="get" class="card mb-4 p-4">
+    <div class="flex flex-col gap-3 lg:flex-row">
+      <input type="search" name="q" value="{{ request.GET.q }}" class="input flex-1"
+             placeholder="Search every field…" data-search>
+
+      <select name="game" class="input" data-autosubmit>
+        <option value="">All games</option>
+        {% for game in games %}
+          <option value="{{ game }}" {% if request.GET.game == game %}selected{% endif %}>{{ game|game_name }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="motive" class="input" data-autosubmit>
+        <option value="">All motives</option>
+        {% for motive in motives %}
+          <option value="{{ motive }}" {% if request.GET.motive == motive %}selected{% endif %}>{{ motive }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="branch" class="input" data-autosubmit>
+        <option value="">All branches</option>
+        {% for branch in branches %}
+          <option value="{{ branch }}" {% if request.GET.branch == branch %}selected{% endif %}>{{ branch }}</option>
+        {% endfor %}
+      </select>
+
+      <button class="btn btn-primary">Search</button>
+      {% if request.GET %}<a href="{% url 'report_list' %}" class="btn">Clear</a>{% endif %}
+    </div>
+
+    <p class="mt-2 text-xs text-stone-500">
+      Press <kbd>/</kbd> to search. Try <code>nullreference</code>, <code>"exact phrase"</code>, <code>-editor</code>,
+      <code>branch:main</code>, <code>deviceModel:iphone</code> or <code>#1234</code>. All terms must match.
+    </p>
+  </form>
+
+  {% include "diagnostics/_report_rows.html" %}
+{% endblock %}

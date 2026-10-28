@@ -1,0 +1,9 @@
+{% load humanize %}
+<ul class="divide-y divide-stone-100 text-sm">
+  {% for value, count in counts %}
+    <li class="flex items-center justify-between gap-3 px-4 py-2">
+      <span class="truncate font-mono text-xs">{{ value }}</span>
+      <span class="shrink-0 font-semibold">{{ count|intcomma }}</span>
+    </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,113 @@
+// Tailwind source for the report browser. Build it with:
+//   uv run tailwindcss -i frontend/app.css -o diagnostics/static/diagnostics/app.css [--watch]
+
+@import "tailwindcss" source(none);
+@source "../diagnostics/templates";
+@source "../diagnostics/static/diagnostics/app.js";
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("fonts/Montserrat-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("fonts/Montserrat-SemiBold.woff2") format("woff2");
+  font-weight: 500 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("fonts/Montserrat-Bold.woff2") format("woff2");
+  font-weight: 700 800;
+  font-display: swap;
+}
+
+// sourced from dinopoloclub.com
+@theme {
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --color-ink: #212121;
+  --color-brand: #dd032f;
+  --color-brand-dark: #910b26;
+  --color-brand-yellow: #f7be5e;
+  --color-brand-pink: #d15f69;
+  --color-brand-blue: #86b0e9;
+  --color-brand-teal: #0d99a5;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-stone-200 bg-white shadow-sm;
+  }
+  .card-header {
+    @apply flex items-center justify-between gap-3 border-b border-stone-200 px-4 py-2.5;
+  }
+  .card-title {
+    @apply text-sm font-bold tracking-wide text-stone-600 uppercase;
+  }
+
+  .input {
+    @apply rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm;
+    @apply focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none;
+  }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2;
+    @apply border border-stone-300 bg-white text-sm font-semibold text-ink hover:bg-stone-50;
+  }
+  .btn-primary {
+    @apply border-brand bg-brand text-white hover:border-brand-dark hover:bg-brand-dark;
+  }
+  .btn-small {
+    @apply px-2 py-1 text-xs;
+  }
+
+  .nav-link {
+    @apply rounded-md px-3 py-1.5 text-sm font-semibold text-white/80 hover:bg-white/10 hover:text-white;
+  }
+  .nav-link-active {
+    @apply bg-white/15 text-white;
+  }
+
+  .row-link {
+    @apply flex items-center gap-4 px-4 py-3 transition-colors hover:bg-stone-50;
+  }
+
+  .thumb {
+    @apply hidden aspect-video w-28 shrink-0 overflow-hidden rounded-md bg-stone-100 sm:block;
+  }
+
+  .code-block {
+    @apply overflow-auto bg-stone-900 p-4 font-mono text-xs leading-relaxed text-stone-100;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full bg-stone-100 px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-stone-700;
+  }
+  .badge-game {
+    @apply bg-brand-blue/25 text-blue-900;
+  }
+  .motive-exception {
+    @apply bg-brand/10 text-brand-dark;
+  }
+  .motive-assert {
+    @apply bg-brand-yellow/40 text-amber-900;
+  }
+  .motive-error {
+    @apply bg-brand-pink/20 text-brand-dark;
+  }
+  .status-open {
+    @apply bg-brand/10 text-brand-dark;
+  }
+  .status-resolved {
+    @apply bg-brand-teal/15 text-teal-900;
+  }
+  .status-ignored {
+    @apply bg-stone-200 text-stone-600;
+  }
+}

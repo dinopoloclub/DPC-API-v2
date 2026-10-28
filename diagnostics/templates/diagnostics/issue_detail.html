@@ -1,0 +1,73 @@
+{% extends "diagnostics/base.html" %}
+{% load diagnostics_tags humanize %}
+
+{% block title %}Issue #{{ issue.pk }}{% endblock %}
+
+{% block content %}
+  <nav class="mb-3 text-sm text-stone-500">
+    <a href="{% url 'issue_list' %}" class="hover:text-brand">Issues</a> / #{{ issue.pk }}
+  </nav>
+
+  <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0">
+      <h1 class="text-xl font-bold break-words">{{ issue.title }}</h1>
+      <p class="mt-1 font-mono text-sm break-all text-stone-500">{{ issue.culprit }}</p>
+      <div class="mt-2 flex gap-1.5">
+        <span class="badge badge-game">{{ issue.game|game_name }}</span>
+        <span class="badge status-{{ issue.status }}">{{ issue.get_status_display }}</span>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'issue_set_status' issue.pk %}" class="flex gap-2">
+      {% csrf_token %}
+      {% for value, label in statuses %}
+        {% if value != issue.status %}
+          <button name="status" value="{{ value }}" class="btn {% if value == 'resolved' %}btn-primary{% endif %}">
+            {% if value == 'open' %}Reopen{% elif value == 'resolved' %}Mark resolved{% else %}Ignore{% endif %}
+          </button>
+        {% endif %}
+      {% endfor %}
+    </form>
+  </div>
+
+  <div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+    <div class="card p-4">
+      <p class="text-2xl font-bold">{{ issue.report_count|intcomma }}</p>
+      <p class="text-xs text-stone-500">reports</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-2xl font-bold {% if issue.reports_last_day %}text-brand{% endif %}">{{ issue.reports_last_day|intcomma }}</p>
+      <p class="text-xs text-stone-500">in the last 24 hours</p>
+    </div>
+    <div class="card p-4">
+      <p class="font-semibold" title="{{ issue.first_seen }}">{{ issue.first_seen|naturaltime }}</p>
+      <p class="text-xs text-stone-500">first seen</p>
+    </div>
+    <div class="card p-4">
+      <p class="font-semibold" title="{{ issue.last_seen }}">{{ issue.last_seen|naturaltime }}</p>
+      <p class="text-xs text-stone-500">last seen</p>
+    </div>
+  </div>
+
+  <div class="mb-8 grid gap-6 lg:grid-cols-3">
+    <div class="min-w-0 lg:col-span-2">
+      {% if latest_report %}
+        {% include "diagnostics/_error.html" with report=latest_report %}
+      {% endif %}
+    </div>
+
+    <aside class="min-w-0 space-y-6">
+      <section class="card overflow-hidden">
+        <header class="card-header"><h2 class="card-title">Branches</h2></header>
+        {% include "diagnostics/_counts.html" with counts=branches %}
+      </section>
+      <section class="card overflow-hidden">
+        <header class="card-header"><h2 class="card-title">Versions</h2></header>
+        {% include "diagnostics/_counts.html" with counts=versions %}
+      </section>
+    </aside>
+  </div>
+
+  <h2 class="mb-3 text-lg font-bold">Reports in this issue</h2>
+  {% include "diagnostics/_report_rows.html" %}
+{% endblock %}
