@@ -3,8 +3,11 @@ The public API the games post reports to. No auth, and ratelimited by nginx
 """
 
 import logging
+from email.parser import BytesParser
+from email.policy import HTTP
 from typing import Any
 
+from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
 from django.db import connection
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -34,12 +37,28 @@ def new_report(request: HttpRequest) -> JsonResponse:
     logger.info("Received report %s (%s, %s)", report.pk, report.game, report.motive)
     return ok(reportId=report.pk)
 
+def uploaded_files(request: HttpRequest) -> list[UploadedFile]:
+    """
+    The files in a multipart upload
+
+    Unity's MultipartFormFileSection(filename, data) sends a file with no form field name so we
+    have to parse it with the stanard library.
+    """
+    content_type = f"Content-Type: {request.META.get('CONTENT_TYPE', '')}\r\n\r\n".encode()
+    message = BytesParser(policy=HTTP).parsebytes(content_type + request.body)
+    if not message.is_multipart():
+        return []
+    return [
+        SimpleUploadedFile(part.get_filename(), part.get_payload(decode=True))
+        for part in message.iter_parts()
+        if part.get_filename()
+    ]
 
 @csrf_exempt
 @require_POST
 def upload_attachment(request: HttpRequest, report_id: int) -> JsonResponse:
     """Append one chunk of an attachment"""
-    chunks = [chunk for field in request.FILES for chunk in request.FILES.getlist(field)]
+    chunks = uploaded_files(request)
     if not chunks:
         return error("No file was sent.", status=400)
 
