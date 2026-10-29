@@ -1,5 +1,5 @@
-// Tailwind source for the report browser. Build it with:
-//   uv run tailwindcss -i frontend/app.css -o diagnostics/static/diagnostics/app.css [--watch]
+/* Tailwind source for the report browser. Build it with:
+   uv run tailwindcss -i frontend/app.css -o diagnostics/static/diagnostics/app.css [--watch] */
 
 @import "tailwindcss" source(none);
 @source "../diagnostics/templates";
@@ -26,7 +26,7 @@
   font-display: swap;
 }
 
-// sourced from dinopoloclub.com
+/* sourced from dinopoloclub.com */
 @theme {
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
