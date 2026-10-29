@@ -59,7 +59,7 @@ def attachment_file(request: HttpRequest, attachment_id: int) -> HttpResponseBas
 
 @login_required
 @require_GET
-def attachment_thumbnail(_request: HttpRequest, attachment_id: int) -> HttpResponseBase:
+def attachment_thumbnail(request: HttpRequest, attachment_id: int) -> HttpResponseBase:
     """A thumbnail of an image attachment"""
     attachment = get_object_or_404(Attachment.objects.select_related("report"), pk=attachment_id)
     thumbnail = get_thumbnail(attachment) if attachment.is_image else None
