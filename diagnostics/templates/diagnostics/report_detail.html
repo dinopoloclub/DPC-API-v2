@@ -55,8 +55,8 @@
       {% with screenshot=report.screenshot %}
         {% if screenshot %}
           <section class="card overflow-hidden">
-            <a href="{% url 'attachment_file' screenshot.pk %}" target="_blank" title="Open full size">
-              <img src="{% url 'attachment_file' screenshot.pk %}" alt="Screenshot" class="w-full">
+            <a href="{% url 'attachment_file' screenshot.pk %}?v={{ screenshot.size }}" target="_blank" title="Open full size">
+              <img src="{% url 'attachment_file' screenshot.pk %}?v={{ screenshot.size }}" alt="Screenshot" class="w-full">
             </a>
           </section>
         {% endif %}
@@ -72,7 +72,7 @@
                 <p class="text-xs text-stone-500">{{ attachment.size|filesizeformat }}</p>
               </div>
               {% if attachment.is_image or attachment.is_text %}
-                <a href="{% url 'attachment_file' attachment.pk %}" target="_blank" class="btn btn-small">View</a>
+                <a href="{% url 'attachment_file' attachment.pk %}?v={{ attachment.size }}" target="_blank" class="btn btn-small">View</a>
               {% endif %}
               <a href="{% url 'attachment_file' attachment.pk %}?download=1" class="btn btn-small">Download</a>
             </li>

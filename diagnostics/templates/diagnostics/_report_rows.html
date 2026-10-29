@@ -5,7 +5,7 @@
       <div class="thumb">
         {% with screenshot=report.screenshot %}
           {% if screenshot %}
-            <img src="{% url 'thumbnail' screenshot.pk %}" alt="" loading="lazy" class="h-full w-full object-cover" data-thumbnail>
+            <img src="{% url 'thumbnail' screenshot.pk %}?v={{ screenshot.size }}" alt="" loading="lazy" class="h-full w-full object-cover" data-thumbnail>
           {% endif %}
         {% endwith %}
       </div>
